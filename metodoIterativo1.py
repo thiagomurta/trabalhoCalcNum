@@ -6,7 +6,16 @@ from scipy.linalg import lu
 import scipy.sparse.linalg
 
 def jacobi(A, b, tol, nmaxiter):
-    tol = 0
+    nColunas = np.shape[A]
+    j = 0
+    x = []
+    while(j < nmaxiter):
+        for k in A:
+            for i in A:
+                x[k] = (b[i] - somaLinhaMatriz(i, nColunas, A) - somaLinhaMatriz(i+1, nColunas, A))/A[i,i]
+        if(abs(x[i] - x[i-1]) < tol):
+            return x[i]
+
 
 def sor(A, b, tol, nmaxiter, w):
     w = 0
@@ -17,8 +26,6 @@ def fatora(A, w):
 def diagonal_dominante(A):
     i = 0
     j = 0
-    k = 0
-    h = 0
     n = A.shape[0]
     m = n
     soma = 0
