@@ -16,7 +16,7 @@ P, L, U = sc.linalg.lu(A)
 
 ## 04
 taxaPreenchimento = 100 - ( np.count_nonzero(A) / ( np.count_nonzero(L) + np.count_nonzero(U) ) ) * 100
-print(taxaPreenchimento)
+print("Taxa de Preenchimento: ",taxaPreenchimento)
 
 ## 05
 u = np.ones((n, 1))
@@ -27,11 +27,12 @@ x = np.linalg.solve(A,b)
 ## 06
 u = np.ones((n, 1))
 b = S.dot(u)
+
 y = sc.sparse.linalg.spsolve(S, b, permc_spec=None, use_umfpack=True)
 
 ## 07
 distanciaRelativa = np.linalg.norm(u-x)
-print(distanciaRelativa)
+print("Distância Relativa: ", distanciaRelativa)
 
 ## 08
 alfaA = A - P @ L @ U
@@ -39,10 +40,12 @@ print(alfaA)
 t = np.linalg.norm(alfaA, np.inf)
 m = np.linalg.norm(A, np.inf)
 resultado = t/m
-print(resultado)
+print("DistÂncia Relativa: ",resultado)
 
 ## 09
 r = np.linalg.norm(u - x)
+print("Norma do resíduo: ", r)
 
 ## 10
 K = np.linalg.cond(A)
+print("Número de Condicionamento: ", K)
