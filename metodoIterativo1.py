@@ -50,7 +50,7 @@ def somaLinhaMatriz(i, nColunas, A):
     return soma
 
 ## 01
-S = sc.io.mmread('bcsstk02.mtx')
+S = sc.io.mmread('bcsstk25.mtx')
 A = S.todense(order='C')
 n = A.shape[0]
 print(A)

@@ -6,7 +6,7 @@ from scipy.linalg import lu
 import scipy.sparse.linalg
 
 ## 01
-S = sc.io.mmread('bcsstk02.mtx')
+S = sc.io.mmread('cage3.mtx')
 A = S.todense(order='C')
 n = A.shape[0]
 S = scipy.sparse.csr_matrix(A)
@@ -28,19 +28,22 @@ x = np.linalg.solve(A,b)
 u = np.ones((n, 1))
 b = S.dot(u)
 
-y = sc.sparse.linalg.spsolve(S, b, permc_spec=None, use_umfpack=True)
+y = sc.sparse.linalg.spsolve(S, b)
 
 ## 07
-distanciaRelativa = np.linalg.norm(u-x)
-print("Distância Relativa: ", distanciaRelativa)
+distanciaRelativax = np.linalg.norm(u-x)
+print("Distância Relativa Linear denso: ", distanciaRelativax)
+
+distanciaRelativay = np.linalg.norm(u-y)
+print("Distância Relativa Linear esparso: ", distanciaRelativay)
 
 ## 08
 alfaA = A - P @ L @ U
-print(alfaA)
+#print(alfaA)
 t = np.linalg.norm(alfaA, np.inf)
 m = np.linalg.norm(A, np.inf)
 resultado = t/m
-print("DistÂncia Relativa: ",resultado)
+print("Distância Relativa: ",resultado)
 
 ## 09
 r = np.linalg.norm(u - x)
