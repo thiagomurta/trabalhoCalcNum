@@ -7,35 +7,45 @@ import scipy.sparse.linalg
 
 def jacobi(A, b, tol, nmaxiter):
     nColunas = A.shape[0]
-    j = 0
+    iter = 0
     i = 0
-    k = 0
+    j = 0
+    n = len(b)
     x1 = []
-    while(j < nmaxiter):
-        for k in range(nColunas):
-            for i in range(nColunas):
-                x1[k] = (b[i] - somaLinhaMatrizJacobi(i, nColunas, A, x1) - somaLinhaMatrizJacobi(i+1, nColunas, A, x1))/A[i,i]
-        if(abs(x1[k] - x1[k-1]) < tol):
-            er = abs(x1[k] - x1[k-1])
-            return x1, er, j
-    j += 1
+    while(iter < nmaxiter):
+        iter += 1
+        for i in list(range(0,n+1,1)):
+            soma = 0
+            for j in list(range(0, n+1, 1)):
+                if((i-1) != (j-1)):
+                    soma = soma + A[i-1][j-1] * x1[j-1]
+            x1[i-1] = (b[i-1] - soma)/A[i-1][i-1]
+
+        erro = np.linalg.norm(x1[i] - x1[i-1])/np.linalg.norm(x1[i-1])
+        if(erro < tol):
+            return x1, erro, iter
 
 
 def sor(A, b, tol, nmaxiter, w):
-    w = 0
-    nColunas = A.shape[0]
+    n = len(b)
     j = 0
     i = 0
     k = 0
     x2 = []
-    while(j < nmaxiter):
-        for k in range(nColunas):
-            for i in range(nColunas):
-                x2[k] = ((1 - w) * x2[k-1]) + (w/A[i,i]) * (b[i] - somaLinhaMatrizJacobi(i, nColunas, A, x2) - somaLinhaMatrizJacobi(i+1, nColunas, A, x2))
-        if(abs(x2[k] - x2[k-1]) < tol):
-            er2 = abs(x2[k] - x2[k-1])
-            return x2, er2, j
-    j+=1
+    while j < nmaxiter:
+        x_novo = np.copy(x2)
+        for i in range(n):
+            temp = sum(A[i, j]) * x_novo[j]
+            for j in range(n): 
+                if j != i:
+                    x2[k] = ((1 - w) * x2[k-1]) + (w/A[i,i]) * (b[i] - temp)
+
+            erro = np.linalg.norm(x2 - x_novo)/np.linalg.norm(x_novo)
+            if(erro < tol):
+                er2 = erro
+                return x2, er2, j
+        x2 = x_novo 
+        j+=1
 
 def fatora(A, w):
     w = 0
@@ -44,32 +54,19 @@ def diagonal_dominante(A):
     i = 0
     j = 0
     n = A.shape[0]
-    m = n
-    soma = 0
-    while(i < m):
-        while(j < m):
-            if(abs(A[i,i]) > somaLinhaMatriz(i, n,A)):
-                j += 1
-            else:
-                return False
-            m -= 1
-            j+=1
-        i+=1
+    while(i < n):
+        if(abs(A[i,i]) > somaLinhaMatriz(i, n, A)):
+            i += 1
+        else:
+            return False
     return True
-
-def somaLinhaMatrizJacobi(i, nColunas, A, x):
-    j = 0
-    soma = 0
-    while(j < nColunas):
-        soma += A[i,j] * x[j]
-        j+=1
-    return soma
 
 def somaLinhaMatriz(i, nColunas, A):
     j = 0
     soma = 0
     while(j < nColunas):
-        soma += A[i,j]
+        if j != i:
+            soma += A[i,j]
         j+=1
     return soma
 
