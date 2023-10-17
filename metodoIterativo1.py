@@ -8,22 +8,20 @@ import scipy.sparse.linalg
 def jacobi(A, b, tol, nmaxiter):
     nColunas = A.shape[0]
     iter = 0
-    i = 0
-    j = 0
     n = len(b)
-    x1 = []
-    while(iter < nmaxiter):
-        iter += 1
-        for i in list(range(0,n+1,1)):
+    x1 = np.zeros((n, n))
+    while iter < nmaxiter:
+        for k in range(n):
             soma = 0
-            for j in list(range(0, n+1, 1)):
-                if((i-1) != (j-1)):
-                    soma = soma + A[i-1][j-1] * x1[j-1]
-            x1[i-1] = (b[i-1] - soma)/A[i-1][i-1]
-
-        erro = np.linalg.norm(x1[i] - x1[i-1])/np.linalg.norm(x1[i-1])
-        if(erro < tol):
-            return x1, erro, iter
+            x_old = x1.copy()
+            iter += 1
+            print("b: ",b)
+            for i in range(nColunas):
+                soma += somaLinhaMatriz(i, A) * x_old[k]
+                x1[k] = (b[k] - soma)/A[i,i]
+                erro = np.linalg.norm(x1 - x_old)/np.linalg.norm(x1)
+                if(erro < tol):
+                    return x1, erro, iter
 
 
 def sor(A, b, tol, nmaxiter, w):
@@ -35,7 +33,7 @@ def sor(A, b, tol, nmaxiter, w):
     while j < nmaxiter:
         x_novo = np.copy(x2)
         for i in range(n):
-            temp = sum(A[i, j]) * x_novo[j]
+            temp = somaLinhaMatriz(i, A) * x_novo[j]
             for j in range(n): 
                 if j != i:
                     x2[k] = ((1 - w) * x2[k-1]) + (w/A[i,i]) * (b[i] - temp)
@@ -52,22 +50,21 @@ def fatora(A, w):
 
 def diagonal_dominante(A):
     i = 0
-    j = 0
     n = A.shape[0]
     while(i < n):
-        if(abs(A[i,i]) > somaLinhaMatriz(i, n, A)):
+        if(abs(A[i,i]) > somaLinhaMatriz(i, A)):
             i += 1
         else:
             return False
     return True
 
-def somaLinhaMatriz(i, nColunas, A):
+def somaLinhaMatriz(i, A):
+    nColunas = A.shape[0]
     j = 0
     soma = 0
-    while(j < nColunas):
+    for j in range(nColunas):
         if j != i:
             soma += A[i,j]
-        j+=1
     return soma
 
 ## 01
@@ -84,25 +81,28 @@ b = A.dot(np.ones((n,1)))
 print("A matriz é diagonal Dominante?", diagonal_dominante(A))
 
 ## 04
-tol = 0.0001
-nmaxiter = 10
+tol = 0.00001
+nmaxiter = 100
 w = 1.0
 x1 = []
 x2 = []
 
 x1, er1, iter = jacobi(A, b, tol, nmaxiter)
-x2, er2, iter = sor(A, b, tol, nmaxiter, w)
-MJ, MS, MSOR = fatora(A, w)
+#x2, er2, iter = sor(A, b, tol, nmaxiter, w)
+#MJ, MS, MSOR = fatora(A, w)
+print("X1: ",x1)
+print("Erro 1: ",er1)
 
 ## 05
+
 t, V = np.linalg.eig(A)
 max(abs(t))
 
 ## 06
-y1 = np.log(er1)
-plt.plot(x1, y1)
+#y1 = np.log(er1)
+#plt.plot(x1, y1)
 
-y2 = np.log(er2)
-plt.plot(x2, y2)
+#y2 = np.log(er2)
+#plt.plot(x2, y2)
 
 ## 07
