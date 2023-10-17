@@ -10,40 +10,33 @@ def jacobi(A, b, tol, nmaxiter):
     iter = 0
     n = len(b)
     x1 = np.zeros((n, n))
-    while iter < nmaxiter:
-        for k in range(n):
-            soma = 0
-            x_old = x1.copy()
-            iter += 1
-            print("b: ",b)
-            for i in range(nColunas):
-                soma += somaLinhaMatriz(i, A) * x_old[k]
-                x1[k] = (b[k] - soma)/A[i,i]
-                erro = np.linalg.norm(x1 - x_old)/np.linalg.norm(x1)
-                if(erro < tol):
-                    return x1, erro, iter
+    for k in range(n):
+        soma = 0
+        x_old = x1.copy()
+        iter += 1
+        for i in range(nColunas):
+            soma += (somaLinhaMatrizInferior(i, A) * x_old[k] ) + (somaLinhaMatrizSuperior(i, A) * x_old[k] )
+            x1[k] = (b[k] - soma)/A[i,i]
+            erro = np.linalg.norm(x1 - x_old)
+            if(erro < tol or iter >= nmaxiter):
+                return x1, erro, iter
 
 
 def sor(A, b, tol, nmaxiter, w):
+    nColunas = A.shape[0]
     n = len(b)
-    j = 0
-    i = 0
-    k = 0
-    x2 = []
-    while j < nmaxiter:
-        x_novo = np.copy(x2)
-        for i in range(n):
-            temp = somaLinhaMatriz(i, A) * x_novo[j]
-            for j in range(n): 
-                if j != i:
-                    x2[k] = ((1 - w) * x2[k-1]) + (w/A[i,i]) * (b[i] - temp)
-
-            erro = np.linalg.norm(x2 - x_novo)/np.linalg.norm(x_novo)
-            if(erro < tol):
-                er2 = erro
-                return x2, er2, j
-        x2 = x_novo 
-        j+=1
+    iter = 0
+    x1 = np.zeros((n, n))
+    for k in range(n):
+        soma = 0
+        x_novo = x1.copy()
+        iter += 1
+        for i in range(nColunas):
+            soma = ( somaLinhaMatrizInferior(i, A) * x_novo[i] ) + (somaLinhaMatrizSuperior(i, A) * x_novo[i-1])
+            x1[k] = ((1 - w) * x1[k-1]) + (w/A[i,i]) * (b[k] - soma)
+            erro = np.linalg.norm(x1 - x_novo)
+            if(erro < tol or iter >= nmaxiter):
+                return x1, erro, iter
 
 def fatora(A, w):
     w = 0
@@ -64,6 +57,24 @@ def somaLinhaMatriz(i, A):
     soma = 0
     for j in range(nColunas):
         if j != i:
+            soma += A[i,j]
+    return soma
+
+def somaLinhaMatrizInferior(i, A):
+    nColunas = A.shape[0]
+    j = 0
+    soma = 0
+    for j in range(nColunas):
+        if j != i and j < i:
+            soma += A[i,j]
+    return soma
+
+def somaLinhaMatrizSuperior(i, A):
+    nColunas = A.shape[0]
+    j = 0
+    soma = 0
+    for j in range(nColunas):
+        if j != i and j > i:
             soma += A[i,j]
     return soma
 
@@ -88,10 +99,12 @@ x1 = []
 x2 = []
 
 x1, er1, iter = jacobi(A, b, tol, nmaxiter)
-#x2, er2, iter = sor(A, b, tol, nmaxiter, w)
+x2, er2, iter = sor(A, b, tol, nmaxiter, w)
 #MJ, MS, MSOR = fatora(A, w)
-print("X1: ",x1)
-print("Erro 1: ",er1)
+print("X1: ", x1)
+print("Erro 1: ", er1)
+print("X2: ", x2)
+print("Erro 2: ", er2)
 
 ## 05
 
