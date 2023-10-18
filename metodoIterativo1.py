@@ -119,3 +119,27 @@ max(abs(t))
 #plt.plot(x2, y2)
 
 ## 07
+max_iterations=1000 
+tolerance=1e-6
+
+def fatora(A, omega):
+    n = A.shape[0]
+    D = np.diag(np.diag(A))
+    L = np.tril(A, k=-1)
+    U = np.triu(A, k=1)
+
+    # Matrizes
+    MJ = np.linalg.inv(D).dot(L+U)
+    MS = np.linalg.inv(D - L).dot(U)
+    MSOR = np.linalg.inv(D + omega * L).dot((1 - omega) * D - omega * U)
+
+    return MJ, MS, MSOR
+
+
+# Exemplo de uso
+A = np.array([[4, 1, 2], [3, 5, 1], [1, 1, 3]])
+omega = 1.25  # Valor de omega para o método SOR
+
+result = fatora(A, omega)
+
+print("Resultado:", result)
