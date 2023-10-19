@@ -97,7 +97,7 @@ def somaLinhaMatrizSuperior(i, A):
     return soma
 
 ## 01
-S = sc.io.mmread('bcsstk05.mtx')
+S = sc.io.mmread('bcsstk10.mtx')
 A = S.todense(order='C')
 n = A.shape[0]
 S = sc.sparse.csr_matrix(A)
@@ -143,11 +143,12 @@ xGS = np.linspace(1, iter2, num=iter2,endpoint=True)
 y2 = np.log(er2)
 
 # Criando o gráfico
-plt.plot(xJac, y1)
-plt.plot(xGS, y2)
+plt.plot(xJac, y1, color = "red", label='Jacobi')
+plt.plot(xGS, y2, color = "blue", label='Gauss')
 plt.grid(True)
 plt.xlabel('Iterações(i)')
 plt.ylabel('Log(erro)')
+plt.legend()
 plt.show()
 
 ## 07
