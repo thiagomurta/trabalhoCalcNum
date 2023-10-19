@@ -138,13 +138,13 @@ if np.any(raioSOR < 1.0):
 xJac = np.linspace(1, iter1, num=iter1,endpoint=True)
 y1 = np.log(er1)
 
-# Eixo x e y do Gauss Seidel
+# Eixo x e y do SOR
 xGS = np.linspace(1, iter2, num=iter2,endpoint=True)
 y2 = np.log(er2)
 
 # Criando o gráfico
 plt.plot(xJac, y1, color = "red", label='Jacobi')
-plt.plot(xGS, y2, color = "blue", label='Gauss')
+plt.plot(xGS, y2, color = "blue", label='SOR')
 plt.grid(True)
 plt.xlabel('Iterações(i)')
 plt.ylabel('Log(erro)')
