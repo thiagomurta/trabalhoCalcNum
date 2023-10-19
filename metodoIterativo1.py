@@ -16,11 +16,11 @@ def jacobi(A, b, tol, nmaxiter):
         soma = 0
         x_old = x1.copy()
         for i in range(nColunas):
-            erro = 0
             iter += 1
+            erro = 0
             soma += (somaLinhaMatrizInferior(i, A) * x_old[k] ) + (somaLinhaMatrizSuperior(i, A) * x_old[k] )
             x1[k] = (b[k] - soma)/A[i,i]
-            erro = abs(x1 - x_old)
+            erro = np.linalg.norm(x1 - x_old)
             errovet.append(erro)
             if(np.any(erro < tol) or iter >= nmaxiter):
                 return x1, errovet, iter
@@ -36,11 +36,11 @@ def sor(A, b, tol, nmaxiter, w):
         soma = 0
         x_novo = x1.copy()
         for i in range(nColunas):
-            erro = 0
             iter += 1
+            erro = 0
             soma = ( somaLinhaMatrizInferior(i, A) * x_novo[i] ) + (somaLinhaMatrizSuperior(i, A) * x_novo[i-1])
             x1[k] = ((1 - w) * x1[k-1]) + (w/A[i,i]) * (b[k] - soma)
-            erro = abs(x1 - x_novo)
+            erro = np.linalg.norm(x1 - x_novo)
             errovet.append(erro)
             if(np.any(erro < tol) or iter >= nmaxiter):
                 return x1, errovet, iter
@@ -97,7 +97,7 @@ def somaLinhaMatrizSuperior(i, A):
     return soma
 
 ## 01
-S = sc.io.mmread('bcsstk10.mtx')
+S = sc.io.mmread('bcsstk05.mtx')
 A = S.todense(order='C')
 n = A.shape[0]
 S = sc.sparse.csr_matrix(A)
