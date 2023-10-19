@@ -6,7 +6,7 @@ from scipy.linalg import lu
 import scipy.sparse.linalg
 
 ## 01
-S = sc.io.mmread('cage3.mtx')
+S = sc.io.mmread('bcsstk05.mtx')
 A = S.todense(order='C')
 n = A.shape[0]
 S = scipy.sparse.csr_matrix(A)
